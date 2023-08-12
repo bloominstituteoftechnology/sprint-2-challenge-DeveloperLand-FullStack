@@ -262,28 +262,6 @@ console.log(mineSweeper(grid, 4, 4)); // Output: "invalid coordinates"
 
 
     // 👉 CHALLENGE 6 (bonus, NOT graded)
-      function diceRolls() {
-    let totalThrows = 0;
-    let consecutiveSixes = 0;
-
-  while (true) {
-    const roll = Math.floor(Math.random() * 6) + 1; // Random number from 1 to 6
-
-    if (roll === 6) {
-      consecutiveSixes++;
-
-      if (consecutiveSixes === 3) {
-        break; // Found three consecutive sixes, exit the loop
-      }
-    } else {
-      consecutiveSixes = 0; // Reset consecutive sixes count
-    }
-
-    totalThrows++;
-  }
-
-  return totalThrows;
-}
       // 🧠 diceRolls takes no arguments and returns a number
       // The function throws a six-sided dice until 3 sixes in a row are obtained
       // The number of throws it took to obtain that third-in-a-row six is then returned from the function
