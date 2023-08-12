@@ -74,29 +74,25 @@
 
     // 👉 CHALLENGE 1
     function profileActivation(profile, reason) {
-      if (profile.active === undefined) {
-    return "impossible to ascertain status";
-  }
-   // Check if the profile is active
-  if (profile.active) {
-    // Check if the profile has a reason property
-    if (profile.reason !== undefined) {
-      return "confirm status manually";
+    if (!('active' in profile)) {
+        return "impossible to ascertain status";
     }
-    // Deactivate the profile by setting 'active' to false and adding the 'reason' property
-    profile.active = false;
-    profile.reason = reason;
-  } else {
-    // Check if the profile is inactive but the 'reason' property is missing
-    if (profile.reason === undefined) {
-      return "confirm status manually";
+
+    if (profile.active) {
+        if ('reason' in profile) {
+            return "confirm status manually";
+        }
+        profile.active = false;
+        profile.reason = reason;
+    } else {
+        if (!('reason' in profile)) {
+            return "confirm status manually";
+        }
+        delete profile.reason;
+        profile.active = true;
     }
-    // Activate the profile by setting 'active' to true and deleting the 'reason' property
-    profile.active = true;
-    delete profile.reason;
-  }
-    // Return the updated profile object
-  return profile;
+
+    return profile;
 }
   
       // 🧠 profileActivation takes two arguments, profile and reason, which are an object and a string respectively
@@ -115,26 +111,18 @@
 
     // 👉 CHALLENGE 2
     function mineSweeper(grid, x, y) {
-  // Check if the coordinates are out of bounds
-  if (x < 1 || x > 3 || y < 1 || y > 3) {
-    return "invalid coordinates";
-  }
-  // Get the square at the specified coordinates
-  const square = grid[y - 1][x - 1];
-  // Return the square's content with appropriate emojis
-  return square === "🟥" ? "🟥 💀" : "🟦 🥳";
-}
-const grid = [
-  ["🟥", "🟦", "🟥"],
-  ["🟦", "🟥", "🟥"],
-  ["🟥", "🟦", "🟦"]
-];
-console.log(mineSweeper(grid, 1, 1)); // Output: "🟥 💀"
-console.log(mineSweeper(grid, 2, 2)); // Output: "🟥 🥳"
-console.log(mineSweeper(grid, 3, 3)); // Output: "🟦 🥳"
-console.log(mineSweeper(grid, 4, 4)); // Output: "invalid coordinates"
-    
+    if (x < 1 || x > 3 || y < 1 || y > 3) {
+        return "invalid coordinates";
+    }
 
+    const square = grid[y - 1][x - 1];
+
+    if (square === "🟥") {
+        return "🟥 💀";
+    } else if (square === "🟦") {
+        return "🟦 🥳";
+    }
+}
       // 🧠 mineSweeper takes a grid as its first argument, and coordinates x and y as the second and third args
       //  The grid is an array of arrays in the following format: [["🟥","🟦","🟥"],["🟦","🟥","🟥"],["🟥","🟦","🟦"]]
       //  Each subarray is a row of the grid, the first subarray being the top row:
@@ -155,27 +143,25 @@ console.log(mineSweeper(grid, 4, 4)); // Output: "invalid coordinates"
     
 
     // 👉 CHALLENGE 3
-  function booleanize(inputObj) {
-  const transformedObj = {};
+    function booleanize(object) {
+    const transformedObject = {};
 
-  for (const prop in inputObj) {
-    // Check property name length
-    if (prop.length > 9) {
-      return "shorten all prop names to 9 chars or less";
+    for (const key in object) {
+        if (key.length > 9) {
+            return "shorten all prop names to 9 chars or less";
+        }
+
+        const value = object[key];
+        if (value === 0) {
+            transformedObject[key] = false;
+        } else if (value === 1) {
+            transformedObject[key] = true;
+        } else if (value !== null) {
+            transformedObject[key] = value;
+        }
     }
 
-    // Apply transformations to the property value
-    const value = inputObj[prop];
-    if (value === 0) {
-      transformedObj[prop] = false;
-    } else if (value === 1) {
-      transformedObj[prop] = true;
-    } else if (value !== null) {
-      transformedObj[prop] = value;
-    }
-  }
-
-  return transformedObj;
+    return transformedObject;
 }
     
       // 🧠 booleanize takes an object as its single argument, which can have any number of properties
@@ -189,19 +175,23 @@ console.log(mineSweeper(grid, 4, 4)); // Output: "invalid coordinates"
     
 
     // 👉 CHALLENGE 4 
-      function scrub(text, forbidden) {
-  const words = text.split(" ");
-  const scrubbedWords = [];
-
-  for (const word of words) {
-    if (forbidden.includes(word)) {
-      scrubbedWords.push("x".repeat(word.length));
-    } else {
-      scrubbedWords.push(word);
+    function scrub(text, forbidden) {
+    if (forbidden.length === 0) {
+        return text;
     }
-  }
 
-  return scrubbedWords.join(" ");
+    const words = text.split(' ');
+    const scrubbedWords = [];
+
+    for (const word of words) {
+        if (forbidden.indexOf(word) !== -1) {
+            scrubbedWords.push('x'.repeat(word.length));
+        } else {
+            scrubbedWords.push(word);
+        }
+    }
+
+    return scrubbedWords.join(' ');
 }
       // 🧠 scrub takes a string "text" as its first argument, and an array of forbidden words "forbidden" as its second
       // Any word in the text included in the array of forbidden words is replaced with a word of equal length but made of lowcase "x"
@@ -218,34 +208,29 @@ console.log(mineSweeper(grid, 4, 4)); // Output: "invalid coordinates"
 
     // 👉 CHALLENGE 5
     function normalizePhoneNumber(number) {
-  // Check if the number is a 10-digit string
-  if (typeof number !== "string" || number.length !== 10) {
-    return "type a 10-digit number";
-  }
-
-  // Check if all characters are integers between 0 and 9
-  if (!/^[0-9]+$/.test(number)) {
-    return "invalid phone number";
-  }
-
-  // Create a template for the phone number
-  const template = "(XXX) XXX-XXXX";
-
-  // Loop backward over the template
-  let formattedNumber = "";
-  let digitIndex = number.length - 1;
-
-  for (let i = template.length - 1; i >= 0; i--) {
-    const currentChar = template.charAt(i);
-    if (currentChar === "X") {
-      formattedNumber = number.charAt(digitIndex) + formattedNumber;
-      digitIndex--;
-    } else {
-      formattedNumber = currentChar + formattedNumber;
+    if (number.length !== 10) {
+        return "type a 10-digit number";
     }
-  }
 
-  return formattedNumber;
+    for (const char of number) {
+        if (isNaN(char) || char < '0' || char > '9') {
+            return "invalid phone number";
+        }
+    }
+
+    const template = "(XXX) XXX-XXXX";
+    let result = "";
+
+    for (const char of template) {
+        if (char === "X") {
+            result += number.charAt(0);
+            number = number.slice(1);
+        } else {
+            result += char;
+        }
+    }
+
+    return result;
 }
 
       // 🧠 normalizePhoneNumber takes a string as its only argument, representing a ten-digit number
